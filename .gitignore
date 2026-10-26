@@ -13,3 +13,6 @@ data/*
 !data/.gitkeep
 *.sqlite
 *.db
+
+# Local checkout of private durable observations
+/private-data/
