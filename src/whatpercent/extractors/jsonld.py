@@ -53,18 +53,63 @@ def _offers(product: dict[str, Any]) -> list[dict[str, Any]]:
     return [offer for offer in offers if isinstance(offer, dict)]
 
 
-def _mrp_from_offer(offer: dict[str, Any], currency: str | None) -> Decimal | None:
+def _price_specifications(offer: dict[str, Any]) -> list[dict[str, Any]]:
     specifications = offer.get("priceSpecification", [])
     if isinstance(specifications, dict):
         specifications = [specifications]
     if not isinstance(specifications, list):
-        return None
-    for specification in specifications:
-        if not isinstance(specification, dict):
-            continue
-        marker = " ".join(
-            str(specification.get(key, "")) for key in ("priceType", "name", "description")
-        ).lower()
+        return []
+    return [item for item in specifications if isinstance(item, dict)]
+
+
+def _price_marker(specification: dict[str, Any]) -> str:
+    return " ".join(
+        str(specification.get(key, "")) for key in ("priceType", "name", "description")
+    ).lower()
+
+
+def _offer_currency(offer: dict[str, Any]) -> str | None:
+    currency = offer.get("priceCurrency")
+    if currency:
+        return str(currency).strip().upper()
+    for specification in _price_specifications(offer):
+        currency = specification.get("priceCurrency")
+        if currency:
+            return str(currency).strip().upper()
+    return None
+
+
+def _selling_price_from_offer(offer: dict[str, Any], currency: str | None) -> Decimal | None:
+    if offer.get("price") is not None:
+        return _decimal_price(offer["price"], currency)
+    specifications = _price_specifications(offer)
+    preferred = [
+        item
+        for item in specifications
+        if any(term in _price_marker(item) for term in ("sale", "offer price"))
+    ]
+    other = [
+        item
+        for item in specifications
+        if not any(
+            term in _price_marker(item)
+            for term in ("listprice", "list price", "mrp", "strikethrough")
+        )
+        and item not in preferred
+    ]
+    for specification in preferred + other:
+        price = _decimal_price(
+            specification.get("price"),
+            specification.get("priceCurrency", currency),
+        )
+        if price is not None:
+            return price
+    return None
+
+
+def _mrp_from_offer(offer: dict[str, Any], currency: str | None) -> Decimal | None:
+    for specification in _price_specifications(offer):
+        marker = _price_marker(specification)
         if any(label in marker for label in ("listprice", "list price", "mrp", "strikethrough")):
             value = specification.get("price", specification.get("maxPrice"))
             return _decimal_price(value, specification.get("priceCurrency", currency))
@@ -88,8 +133,8 @@ def extract_jsonld_product(html: str) -> ExtractedProduct:
             rating_value = aggregate.get("ratingValue") if isinstance(aggregate, dict) else None
             rating = parse_rating(str(rating_value)) if rating_value is not None else None
             for offer in _offers(product):
-                currency = str(offer.get("priceCurrency", "")).strip().upper() or None
-                price = _decimal_price(offer.get("price"), currency)
+                currency = _offer_currency(offer)
+                price = _selling_price_from_offer(offer, currency)
                 if price is None:
                     continue
                 mrp = _mrp_from_offer(offer, currency)

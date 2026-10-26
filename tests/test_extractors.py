@@ -12,6 +12,7 @@ from whatpercent.extractors import (
 )
 
 FIXTURE = Path(__file__).parent / "fixtures" / "synthetic_product_jsonld.html"
+REAL_FIXTURE = Path(__file__).parent / "fixtures" / "mamaearth_vitamin_c_daily_glow_serum.html"
 
 
 def test_jsonld_product_reads_synthetic_fixture() -> None:
@@ -27,6 +28,17 @@ def test_jsonld_product_reads_synthetic_fixture() -> None:
 def test_jsonld_extractor_implements_the_shared_interface() -> None:
     extracted = JsonLdProductExtractor().extract(FIXTURE.read_text(encoding="utf-8"))
     assert extracted.title.startswith("Synthetic ")
+
+
+def test_mamaearth_real_fixture_extracts_sale_and_strikethrough_prices() -> None:
+    extracted = extract_jsonld_product(REAL_FIXTURE.read_text(encoding="utf-8"))
+    assert extracted.title == (
+        "Vitamin C Daily Glow Face Serum With Vitamin C & Turmeric for Radiant Skin - 30 ml"
+    )
+    assert extracted.price == Decimal("374.0")
+    assert extracted.mrp == Decimal("499.0")
+    assert extracted.rating == Decimal("4.83")
+    assert extracted.currency == "INR"
 
 
 def test_jsonld_does_not_guess_mrp_from_regular_offer() -> None:
