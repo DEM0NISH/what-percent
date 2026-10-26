@@ -7,4 +7,27 @@ A self-monitoring scraper with validated fallbacks for collecting public product
 ```powershell
 python -m whatpercent --help
 ruff check .
+pytest -q
 ```
+
+## Collection and local storage
+
+Once the product list is approved and `products.yaml` is supplied, `collect` reads that config, fetches the configured public pages, validates title identity and prices, and writes monthly CSV snapshots under `WHATPCT_DATA`. Use `--offline-dir` to exercise the same pipeline with URL-hashed saved HTML fixtures and no network access:
+
+```powershell
+python -m whatpercent collect --config products.yaml --offline-dir tests/fixtures
+python -m whatpercent build-db
+```
+
+The CSV files are the durable store; `build-db` recreates the ignored SQLite cache. `--force` appends another same-day observation, while the default skips already successful product/site/date keys. The JSON-LD fixture in this repository is explicitly synthetic and tests parser behavior only; it is not evidence about Mamaearth's live page structure or prices.
+
+## Docker
+
+After creating `.env` from `.env.example` and after the approved `products.yaml` is available:
+
+```powershell
+docker compose build
+docker compose run --rm collector collect --limit 3
+```
+
+Compose mounts `./data` as `/data` and mounts `products.yaml` read-only. Keep the local data directory private and out of the public repository.

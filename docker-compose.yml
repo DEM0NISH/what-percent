@@ -1,0 +1,10 @@
+services:
+  collector:
+    build: .
+    env_file:
+      - .env
+    environment:
+      WHATPCT_DATA: /data
+    volumes:
+      - ./data:/data
+      - ./products.yaml:/app/products.yaml:ro
