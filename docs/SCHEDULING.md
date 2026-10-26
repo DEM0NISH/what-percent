@@ -15,7 +15,7 @@ The scheduled workflow checks out the public code repository and the private dat
 
 Create the private data repository and its `data` branch before enabling the workflow. Keep Actions logs free of raw product rows and prices. Do not upload debug HTML as an artifact on the public code repository. Debug material, if retained for a run, must stay private; otherwise let the temporary runner copy expire.
 
-The collector, CSV storage, and Docker image are implemented. Scheduled collection is still not ready to enable: the product list is awaiting the user's verification and approval after the source returned HTTP 429 during discovery. Do not create `products.yaml` or run collection against the source before that checkpoint is cleared.
+The collector, CSV storage, and Docker files are implemented. The checked-in `products.yaml` is provisional and came from sitemap slugs; live page titles, availability, and prices remain unverified. The CLI blocks live collection with this provisional catalog. Replace the provisional marker only after page identities have been checked against real saved pages and the user approves the catalog.
 
 ## GitHub Actions schedule
 

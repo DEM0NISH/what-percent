@@ -7,6 +7,7 @@ import yaml
 from whatpercent.__main__ import build_parser
 from whatpercent.collect import collect_products, load_products
 from whatpercent.fetcher import offline_fixture_name
+from whatpercent.identity import validate_expected_tokens
 
 SYNTHETIC_HTML = """<!doctype html><script type='application/ld+json'>
 {"@type":"Product","name":"Mamaearth Synthetic Vitamin C Daily Glow Serum 30 ml",
@@ -88,3 +89,23 @@ def test_product_config_rejects_unapproved_site(tmp_path) -> None:
         assert "mamaearth.in" in str(exc)
     else:
         raise AssertionError("unapproved host was accepted")
+
+
+def test_provisional_products_file_has_fifteen_valid_identities() -> None:
+    products = load_products("products.yaml")
+    assert len(products) == 15
+    for product in products:
+        validate_expected_tokens(product["expected_tokens"])
+    daily_glow = next(product for product in products if product["id"] == "p005")
+    assert daily_glow["expected_tokens"] == ["vitamin c", "daily glow", "30ml"]
+
+
+def test_provisional_catalog_blocks_live_collection(tmp_path) -> None:
+    path = tmp_path / "products.yaml"
+    path.write_text("catalog_status: provisional\nproducts: []\n", encoding="utf-8")
+    try:
+        collect_products(config_path=path)
+    except ValueError as exc:
+        assert "verify page identities" in str(exc)
+    else:
+        raise AssertionError("provisional catalog was allowed to make a live request")

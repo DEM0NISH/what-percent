@@ -1,0 +1,157 @@
+# PROVISIONAL: URLs and pack sizes were taken from the cached product sitemap.
+# Product-page titles, availability, and prices have not been verified. Recheck
+# identities against real saved pages before enabling live collection.
+catalog_status: provisional
+settings:
+  sale_start: null
+  sale_end: null
+  min_baseline_days: 7
+  good_baseline_days: 14
+  min_coverage: 0.80
+  advertised_min_pct: 20
+  gap_min_pp: 15
+  runup_window_days: 7
+  runup_min_pct: 10
+  mrp_jump_min_pct: 10
+  fallback_max_deviation: 0.50
+  min_fill_price: 0.90
+  min_fill_name: 0.90
+  min_fill_mrp: 0.70
+  min_validity: 0.90
+  drift_min_similarity: 0.80
+products:
+  - id: p001
+    brand: Mamaearth
+    variant: Ubtan Face Wash
+    pack_size_value: 150
+    pack_size_unit: ml
+    category: face wash
+    expected_tokens: ["ubtan face wash", "150ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/ubtan-face-wash-with-turmeric-saffron-for-tan-removal-150-ml
+  - id: p002
+    brand: Mamaearth
+    variant: Coco Face Wash
+    pack_size_value: 100
+    pack_size_unit: ml
+    category: face wash
+    expected_tokens: ["coco face wash", "100ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/coco-face-wash-with-coffee-and-cocoa-for-skin-awakening-100ml
+  - id: p003
+    brand: Mamaearth
+    variant: Vitamin C Face Wash
+    pack_size_value: 100
+    pack_size_unit: ml
+    category: face wash
+    expected_tokens: ["vitamin c face wash", "100ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/vitamin-c-face-wash-with-vitamin-c-and-turmeric-for-skin-illumination-100ml
+  - id: p004
+    brand: Mamaearth
+    variant: Tea Tree Foaming Face Wash
+    pack_size_value: 150
+    pack_size_unit: ml
+    category: face wash
+    expected_tokens: ["tea tree face wash", "150ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/tea-tree-foaming-face-wash-with-tea-tree-salicylic-acid-for-acne-pimples-150ml
+  - id: p005
+    brand: Mamaearth
+    variant: Vitamin C Daily Glow Face Serum
+    pack_size_value: 30
+    pack_size_unit: ml
+    category: serum
+    expected_tokens: ["vitamin c", "daily glow", "30ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/vitamin-c-daily-glow-face-serum-with-vitamin-c-turmeric-for-radiant-skin-30-ml
+  - id: p006
+    brand: Mamaearth
+    variant: Skin Correct Face Serum
+    pack_size_value: 30
+    pack_size_unit: ml
+    category: serum
+    expected_tokens: ["skin correct face serum", "30ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/skin-correct-face-serum-with-niacinamide-and-ginger-extract-for-acne-marks-scars-30-ml
+  - id: p007
+    brand: Mamaearth
+    variant: Aqua Glow Face Serum
+    pack_size_value: 30
+    pack_size_unit: ml
+    category: serum
+    expected_tokens: ["aqua glow face serum", "30ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/aqua-glow-face-serum-with-himalayan-thermal-water-hyaluronic-acid-30-ml
+  - id: p008
+    brand: Mamaearth
+    variant: Vitamin C Oil-Free Face Moisturizer
+    pack_size_value: 80
+    pack_size_unit: ml
+    category: face moisturiser
+    expected_tokens: ["vitamin c oil free moisturizer", "80ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/vitamin-c-oil-free-moisturizer-for-face-with-vitamin-c-gotu-kola-for-skin-illumination-80-ml
+  - id: p009
+    brand: Mamaearth
+    variant: Ubtan Oil-Free Face Moisturizer
+    pack_size_value: 80
+    pack_size_unit: ml
+    category: face moisturiser
+    expected_tokens: ["ubtan oil free face moisturizer", "80ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/ubtan-oil-free-face-moisturizer-with-turmeric-saffron-for-skin-brightening-80-ml
+  - id: p010
+    brand: Mamaearth
+    variant: Vitamin C Daily Glow Sunscreen
+    pack_size_value: 50
+    pack_size_unit: g
+    category: sunscreen
+    expected_tokens: ["vitamin c", "daily glow sunscreen", "50g"]
+    urls:
+      mamaearth: https://mamaearth.in/products/vitamin-c-daily-glow-sunscreen-with-vitamin-c-turmeric-for-sun-protection-glow-50-g
+  - id: p011
+    brand: Mamaearth
+    variant: Rice Sunscreen Gel
+    pack_size_value: 50
+    pack_size_unit: g
+    category: sunscreen
+    expected_tokens: ["rice sunscreen gel", "50g"]
+    urls:
+      mamaearth: https://mamaearth.in/products/rice-sunscreen-gel-with-rice-water-niacinamide-for-uva-uvb-protection-50-g
+  - id: p012
+    brand: Mamaearth
+    variant: Onion Shampoo
+    pack_size_value: 250
+    pack_size_unit: ml
+    category: hair care
+    expected_tokens: ["onion shampoo", "250ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/mamaearth-onion-shampoo-for-hair-growth-hair-fall-control-with-onion-oil-plant-keratin-250-ml
+  - id: p013
+    brand: Mamaearth
+    variant: Bhringamla Hair Oil
+    pack_size_value: 250
+    pack_size_unit: ml
+    category: hair care
+    expected_tokens: ["bhringamla hair oil", "250ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/bhringamla-hair-oil-with-bhringraj-amla-for-intense-hair-treatment-250ml
+  - id: p014
+    brand: Mamaearth
+    variant: Coco Body Lotion
+    pack_size_value: 400
+    pack_size_unit: ml
+    category: body care
+    expected_tokens: ["coco body lotion", "400ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/coco-body-lotion-with-coffee-and-cocoa-for-intense-moisturization-400ml
+  - id: p015
+    brand: Mamaearth
+    variant: Ubtan Body Wash
+    pack_size_value: 300
+    pack_size_unit: ml
+    category: body care
+    expected_tokens: ["ubtan body wash", "300ml"]
+    urls:
+      mamaearth: https://mamaearth.in/products/ubtan-body-wash-with-turmeric-saffron-for-glowing-skin-300-ml

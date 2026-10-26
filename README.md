@@ -12,7 +12,7 @@ pytest -q
 
 ## Collection and local storage
 
-Once the product list is approved and `products.yaml` is supplied, `collect` reads that config, fetches the configured public pages, validates title identity and prices, and writes monthly CSV snapshots under `WHATPCT_DATA`. Use `--offline-dir` to exercise the same pipeline with URL-hashed saved HTML fixtures and no network access:
+The current `products.yaml` is provisional: its URLs and sizes came from a cached sitemap, and live titles, availability, and prices are not verified. Live collection is blocked for this catalog until those identities are checked against real saved pages. Use `--offline-dir` to exercise the pipeline with URL-hashed saved HTML fixtures and no network access:
 
 ```powershell
 python -m whatpercent collect --config products.yaml --offline-dir tests/fixtures

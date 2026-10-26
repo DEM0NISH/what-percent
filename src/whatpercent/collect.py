@@ -74,6 +74,11 @@ def load_products(config_path: Path | str) -> list[dict[str, Any]]:
     return products
 
 
+def _is_provisional(config_path: Path | str) -> bool:
+    document = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    return isinstance(document, dict) and document.get("catalog_status") == "provisional"
+
+
 def collect_products(
     *,
     config_path: Path | str = "products.yaml",
@@ -84,6 +89,10 @@ def collect_products(
     fetcher: PoliteFetcher | None = None,
 ) -> dict[str, dict[str, int]]:
     """Fetch, extract, validate, and append configured product observations."""
+    if offline_dir is None and _is_provisional(config_path):
+        raise ConfigurationError(
+            "This product catalog is provisional; verify page identities before live collection."
+        )
     products = load_products(config_path)
     if site is not None:
         if site not in KNOWN_SITE_HOSTS:
