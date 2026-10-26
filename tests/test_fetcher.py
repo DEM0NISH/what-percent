@@ -153,6 +153,21 @@ def test_one_shot_mode_returns_429_headers_without_retry() -> None:
     assert len(session.calls) == 2  # robots.txt plus exactly one product-page request
 
 
+def test_one_shot_mode_does_not_retry_transient_errors() -> None:
+    fetcher, session = client(
+        [
+            FakeResponse(text="User-agent: *\nAllow: /"),
+            FakeResponse(status_code=503, headers={"Server": "example-edge"}),
+        ]
+    )
+    fetcher.retry_429 = False
+    fetcher.retry_transient = False
+    result = fetcher.fetch("https://shop.test/products/item")
+    assert result.status == 503
+    assert result.headers == {"Server": "example-edge"}
+    assert len(session.calls) == 2
+
+
 def test_5xx_uses_exponential_retry_limit() -> None:
     waits: list[float] = []
     fetcher, session = client(

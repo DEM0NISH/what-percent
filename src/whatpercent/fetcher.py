@@ -75,6 +75,7 @@ class PoliteFetcher:
         clock: Callable[[], float] = time.monotonic,
         random_value: Callable[[], float] = random.random,
         retry_429: bool = True,
+        retry_transient: bool = True,
     ) -> None:
         settings = load_settings() if user_agent is None else None
         self.user_agent = user_agent or settings.user_agent
@@ -89,6 +90,7 @@ class PoliteFetcher:
         self._clock = clock
         self._random = random_value
         self.retry_429 = retry_429
+        self.retry_transient = retry_transient
         self._robots: dict[str, RobotFileParser | None] = {}
         self._crawl_delays: dict[str, float] = {}
         self._last_request_at: dict[str, float] = {}
@@ -160,6 +162,8 @@ class PoliteFetcher:
                     allow_redirects=False,
                 )
             except requests.exceptions.Timeout:
+                if not self.retry_transient:
+                    return None, latest_retry_after, "timeout"
                 if retries >= 3:
                     return None, latest_retry_after, "timeout"
                 self._sleep(2**retries)
@@ -183,6 +187,8 @@ class PoliteFetcher:
                 self._wait_for_host(host, extra=latest_retry_after)
                 continue
             if 500 <= response.status_code < 600:
+                if not self.retry_transient:
+                    return response, latest_retry_after, None
                 if retries >= 3:
                     return response, latest_retry_after, None
                 self._sleep(2**retries)
