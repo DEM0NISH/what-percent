@@ -16,3 +16,4 @@ data/*
 
 # Local checkout of private durable observations
 /private-data/
+.cache/

@@ -33,10 +33,12 @@ jobs:
       - name: Collect prices
         id: collect
         env:
+          WHATPCT_REPO_URL: ${{ vars.WHATPCT_REPO_URL }}
           WHATPCT_CONTACT_EMAIL: ${{ vars.WHATPCT_CONTACT_EMAIL }}
         run: |
           set +e
           docker run --rm \
+            -e WHATPCT_REPO_URL \
             -e WHATPCT_CONTACT_EMAIL \
             -e WHATPCT_DATA=/data \
             -v "$GITHUB_WORKSPACE/private-data:/data" \
@@ -78,3 +80,5 @@ jobs:
           if [[ "$COLLECT_EXIT_CODE" != "0" ]]; then
             exit "$COLLECT_EXIT_CODE"
           fi
+
+

@@ -10,6 +10,7 @@ The scheduled workflow checks out the public code repository and the private dat
 
 - Variable `WHATPCT_DATA_REPOSITORY`: `OWNER/PRIVATE_DATA_REPOSITORY`.
 - Secret `WHATPCT_DATA_REPO_TOKEN`: a narrowly scoped token that can read and write Contents in that private data repository.
+- Variable `WHATPCT_REPO_URL`: public repository URL used by the honest User-Agent.
 - Variable `WHATPCT_CONTACT_EMAIL`: contact email used by the honest User-Agent.
 
 Create the private data repository and its `data` branch before enabling the workflow. Keep Actions logs free of raw product rows and prices. Do not upload debug HTML as an artifact on the public code repository. Debug material, if retained for a run, must stay private; otherwise let the temporary runner copy expire.
@@ -34,4 +35,5 @@ Keep the private data checkout at `private-data/`, which is ignored by Git, or s
 ## Long-term maintenance
 
 Only the current month’s CSV changes during normal collection. If the private data repository grows large, document and perform a yearly squash there. Preserve the public code repository's history independently from the private observation history.
+
 
