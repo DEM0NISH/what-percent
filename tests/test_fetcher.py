@@ -133,6 +133,26 @@ def test_repeated_short_429_stops_host_after_single_retry() -> None:
     assert len(session.calls) == 3
 
 
+def test_one_shot_mode_returns_429_headers_without_retry() -> None:
+    response_headers = {
+        "Retry-After": "17",
+        "Server": "example-edge",
+        "Content-Type": "text/html; charset=utf-8",
+    }
+    fetcher, session = client(
+        [
+            FakeResponse(text="User-agent: *\nAllow: /"),
+            FakeResponse(status_code=429, text="rate limited", headers=response_headers),
+        ]
+    )
+    fetcher.retry_429 = False
+    result = fetcher.fetch("https://shop.test/products/item")
+    assert result.status == 429
+    assert result.retry_after == 17
+    assert result.headers == response_headers
+    assert len(session.calls) == 2  # robots.txt plus exactly one product-page request
+
+
 def test_5xx_uses_exponential_retry_limit() -> None:
     waits: list[float] = []
     fetcher, session = client(

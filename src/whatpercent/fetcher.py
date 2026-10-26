@@ -6,8 +6,8 @@ import hashlib
 import logging
 import random
 import time
-from collections.abc import Callable
-from dataclasses import dataclass
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -30,6 +30,7 @@ class FetchResult:
     skipped_reason: str | None
     elapsed: float
     retry_after: float | None = None
+    headers: Mapping[str, str] = field(default_factory=dict)
 
 
 def offline_fixture_name(url: str) -> str:
@@ -73,6 +74,7 @@ class PoliteFetcher:
         sleeper: Callable[[float], None] = time.sleep,
         clock: Callable[[], float] = time.monotonic,
         random_value: Callable[[], float] = random.random,
+        retry_429: bool = True,
     ) -> None:
         settings = load_settings() if user_agent is None else None
         self.user_agent = user_agent or settings.user_agent
@@ -86,6 +88,7 @@ class PoliteFetcher:
         self._sleep = sleeper
         self._clock = clock
         self._random = random_value
+        self.retry_429 = retry_429
         self._robots: dict[str, RobotFileParser | None] = {}
         self._crawl_delays: dict[str, float] = {}
         self._last_request_at: dict[str, float] = {}
@@ -114,14 +117,16 @@ class PoliteFetcher:
         if response is None:
             return self._result(None, None, reason or "fetch_error", started, retry_after)
         if response.status_code == 403:
-            return self._result(None, 403, "http_403", started)
+            return self._result(None, 403, "http_403", started, headers=response.headers)
         if response.status_code == 429:
-            return self._result(None, 429, "http_429", started, retry_after)
+            return self._result(None, 429, "http_429", started, retry_after, response.headers)
         if not 200 <= response.status_code < 300:
-            return self._result(None, response.status_code, "http_error", started)
+            return self._result(
+                None, response.status_code, "http_error", started, headers=response.headers
+            )
         body = response.text
         self._write_dev_cache(url, body)
-        return self._result(body, response.status_code, None, started)
+        return self._result(body, response.status_code, None, started, headers=response.headers)
 
     def _load_robots(self, target: SplitResult) -> RobotFileParser | None:
         parts = target
@@ -166,7 +171,12 @@ class PoliteFetcher:
                 return response, latest_retry_after, None
             if response.status_code == 429:
                 latest_retry_after = parse_retry_after(response.headers.get("Retry-After"))
-                if retried_429 or latest_retry_after is None or latest_retry_after > 60.0:
+                if (
+                    not self.retry_429
+                    or retried_429
+                    or latest_retry_after is None
+                    or latest_retry_after > 60.0
+                ):
                     self._blocked_hosts.add(host)
                     return response, latest_retry_after, None
                 retried_429 = True
@@ -224,6 +234,7 @@ class PoliteFetcher:
         reason: str | None,
         started: float,
         retry_after: float | None = None,
+        headers: Mapping[str, str] | None = None,
     ) -> FetchResult:
         return FetchResult(
             html=html,
@@ -231,4 +242,5 @@ class PoliteFetcher:
             skipped_reason=reason,
             elapsed=max(self._clock() - started, 0.0),
             retry_after=retry_after,
+            headers=dict(headers or {}),
         )
