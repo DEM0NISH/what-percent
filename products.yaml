@@ -1,6 +1,6 @@
 # PROVISIONAL: URLs and pack sizes were taken from the cached product sitemap.
-# Product-page titles, availability, and prices have not been verified. Recheck
-# identities against real saved pages before enabling live collection.
+# p005 had one live-page check on 2026-10-26; the other 14 entries are still
+# sitemap-only. Recheck the whole catalog before enabling live collection.
 catalog_status: provisional
 settings:
   sale_start: null

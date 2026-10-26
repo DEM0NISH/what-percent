@@ -12,7 +12,7 @@ pytest -q
 
 ## Collection and local storage
 
-The current `products.yaml` is provisional: its URLs and sizes came from a cached sitemap, and live titles, availability, and prices are not verified. Live collection is blocked for this catalog until those identities are checked against real saved pages. Use `--offline-dir` to exercise the pipeline with URL-hashed saved HTML fixtures and no network access:
+The current `products.yaml` is provisional: its URLs and sizes came from a cached sitemap. One serum page has been checked once; the other 14 entries still need real-page verification. Live collection is blocked for this catalog until all identities are checked against saved pages. Use `--offline-dir` to exercise the pipeline with URL-hashed saved HTML fixtures and no network access:
 
 ```powershell
 python -m whatpercent collect --config products.yaml --offline-dir tests/fixtures
