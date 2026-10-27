@@ -1,4 +1,5 @@
 .venv/
+.venv.broken-*/
 venv/
 __pycache__/
 *.py[cod]
@@ -16,4 +17,8 @@ data/*
 
 # Local checkout of private durable observations
 /private-data/
+/data-repo/
 .cache/
+tests/fixtures/raw/
+data/debug/
+debug/

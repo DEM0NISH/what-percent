@@ -34,11 +34,15 @@ RUN_COLUMNS = (
     "rejected",
     "blocked",
     "price_fill",
+    "title_fill",
     "mrp_fill",
     "validity_rate",
     "drift_similarity",
     "suspect",
+    "skipped",
+    "reasons",
 )
+SPOTCHECK_COLUMNS = ("row_key", "checked_at", "result", "note")
 GOOD_STATUSES = {"ok", "fallback_ok"}
 ALLOWED_STATUSES = GOOD_STATUSES | {
     "rejected",
@@ -69,11 +73,25 @@ def _atomic_csv(path: Path, columns: Sequence[str], rows: Iterable[Mapping[str, 
             temporary.unlink()
 
 
-def _read_csv(path: Path, columns: Sequence[str]) -> list[dict[str, str]]:
+def _read_csv(
+    path: Path,
+    columns: Sequence[str],
+    *,
+    required: Sequence[str] | None = None,
+) -> list[dict[str, str]]:
     if not path.is_file():
         return []
     with path.open(encoding="utf-8", newline="") as stream:
-        return list(csv.DictReader(stream))
+        reader = csv.DictReader(stream)
+        if not reader.fieldnames:
+            raise ValueError(f"CSV file has no header: {path}")
+        missing = set(required or columns) - set(reader.fieldnames)
+        if missing:
+            raise ValueError(f"CSV file {path} is missing columns: {', '.join(sorted(missing))}")
+        rows = list(reader)
+        if any(None in row for row in rows):
+            raise ValueError(f"CSV file has rows with extra fields: {path}")
+        return rows
 
 
 def append_observations(
@@ -102,7 +120,6 @@ def append_observations(
     collected_keys = {
         (row.get("date_utc", ""), row.get("product_id", ""), row.get("site", ""))
         for row in existing
-        if row.get("status") in GOOD_STATUSES
     }
     added = 0
     skipped = 0
@@ -114,8 +131,7 @@ def append_observations(
             skipped += 1
             continue
         existing.append(row)
-        if row.get("status") in GOOD_STATUSES:
-            collected_keys.add(key)
+        collected_keys.add(key)
         added += 1
     if added:
         _atomic_csv(path, SNAPSHOT_COLUMNS, existing)
@@ -125,10 +141,29 @@ def append_observations(
 def append_run(data_dir: Path | str, run: Mapping[str, object]) -> Path:
     """Append one per-site run-health row using the same atomic replacement path."""
     path = Path(data_dir) / "runs.csv"
-    rows = _read_csv(path, RUN_COLUMNS)
+    rows = _read_csv(path, RUN_COLUMNS, required=RUN_COLUMNS[:8])
     rows.append(dict(run))
     _atomic_csv(path, RUN_COLUMNS, rows)
     return path
+
+
+def load_run_rows(data_dir: Path | str) -> list[dict[str, str]]:
+    """Read per-site health history without exposing it outside the private data path."""
+    return _read_csv(Path(data_dir) / "runs.csv", RUN_COLUMNS, required=RUN_COLUMNS[:8])
+
+
+def append_spotcheck(data_dir: Path | str, row: Mapping[str, object]) -> Path:
+    """Append one manual comparison without changing collected observations."""
+    path = Path(data_dir) / "spotchecks.csv"
+    rows = _read_csv(path, SPOTCHECK_COLUMNS)
+    rows.append(dict(row))
+    _atomic_csv(path, SPOTCHECK_COLUMNS, rows)
+    return path
+
+
+def load_spotchecks(data_dir: Path | str) -> list[dict[str, str]]:
+    """Read previously recorded manual comparisons."""
+    return _read_csv(Path(data_dir) / "spotchecks.csv", SPOTCHECK_COLUMNS)
 
 
 def build_database(data_dir: Path | str) -> Path:
@@ -151,8 +186,8 @@ def build_database(data_dir: Path | str) -> Path:
             connection.execute(
                 "CREATE TABLE runs (run_id TEXT, started_at TEXT, site TEXT, rows INTEGER, "
                 "ok INTEGER, fallback_ok INTEGER, rejected INTEGER, blocked INTEGER, "
-                "price_fill REAL, mrp_fill REAL, validity_rate REAL, drift_similarity REAL, "
-                "suspect TEXT)"
+                "price_fill REAL, title_fill REAL, mrp_fill REAL, validity_rate REAL, "
+                "drift_similarity REAL, suspect TEXT, skipped INTEGER, reasons TEXT)"
             )
             for csv_path in sorted((root / "snapshots").glob("????-??.csv")):
                 records = _read_csv(csv_path, SNAPSHOT_COLUMNS)
@@ -160,9 +195,9 @@ def build_database(data_dir: Path | str) -> Path:
                     "INSERT OR IGNORE INTO snapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     [tuple(row.get(column, "") for column in SNAPSHOT_COLUMNS) for row in records],
                 )
-            run_records = _read_csv(root / "runs.csv", RUN_COLUMNS)
+            run_records = _read_csv(root / "runs.csv", RUN_COLUMNS, required=RUN_COLUMNS[:8])
             connection.executemany(
-                "INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [tuple(row.get(column, "") for column in RUN_COLUMNS) for row in run_records],
             )
             connection.commit()
@@ -176,7 +211,7 @@ def build_database(data_dir: Path | str) -> Path:
 def load_observations(data_dir: Path | str) -> pd.DataFrame:
     """Return the durable observation CSVs as a DataFrame, preserving blank values."""
     paths = sorted((Path(data_dir) / "snapshots").glob("????-??.csv"))
-    frames = [pd.read_csv(path, dtype=str, keep_default_na=False) for path in paths]
-    if not frames:
+    records = [row for path in paths for row in _read_csv(path, SNAPSHOT_COLUMNS)]
+    if not records:
         return pd.DataFrame(columns=SNAPSHOT_COLUMNS)
-    return pd.concat(frames, ignore_index=True).reindex(columns=SNAPSHOT_COLUMNS)
+    return pd.DataFrame(records, columns=SNAPSHOT_COLUMNS).fillna("")

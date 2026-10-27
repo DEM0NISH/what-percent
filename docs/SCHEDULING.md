@@ -1,39 +1,49 @@
-# Scheduling and data privacy
+# Scheduling and private data
 
-## Public/private split
+## Data boundary
 
-The public repository contains code, tests, documentation, and aggregated reports only. It must not contain individual price observations, `runs.csv`, `spotchecks.csv`, the derived SQLite database, raw HTML/debug snippets, or other row-level collection data.
+The public code repository contains code, tests, documentation and aggregated reports only. Raw price observations, monthly snapshots, run history, spot-check records, fingerprints, SQLite caches and debug snippets belong in the separate private repository `DEM0NISH/what-percent-data`. A branch in the public code repository is public too, so it is not a data store.
 
-The durable monthly snapshots and run/spot-check history live on a `data` branch in a **separate private repository**. A branch in the public code repository is still public, so do not store durable observations on a public repo branch. Keep the separate data repository private and do not publish its URL, rows, or artifacts in the public project.
+The durable store uses append-only `snapshots/YYYY-MM.csv` files plus `runs.csv`, `spotchecks.csv` and `skeletons.json`. SQLite is rebuildable and must not be committed. Raw product HTML belongs in the gitignored local `tests/fixtures/raw/` directory and must never be committed.
 
-The scheduled workflow checks out the public code repository and the private data repository separately. Configure these repository variables/secrets in the public code repository:
+## Manual GitHub Actions workflow
 
-- Variable `WHATPCT_DATA_REPOSITORY`: `OWNER/PRIVATE_DATA_REPOSITORY`.
-- Secret `WHATPCT_DATA_REPO_TOKEN`: a narrowly scoped token that can read and write Contents in that private data repository.
-- Variable `WHATPCT_REPO_URL`: public repository URL used by the honest User-Agent.
-- Variable `WHATPCT_CONTACT_EMAIL`: contact email used by the honest User-Agent.
+`.github/workflows/collect.yml` is manual-only. Its daily schedule is present as a comment and must stay disabled until the owner explicitly enables it after all go-live gates. The workflow checks out `DEM0NISH/what-percent-data` into `data-repo`, mounts it at `/data`, runs the collector, saves any available observations and health rows even for a suspect run, then fails the job when collection returned non-zero. Debug files are retained as a seven-day artifact only for failed or suspect runs. They are not added to the private repository history.
 
-Create the private data repository and its `data` branch before enabling the workflow. Keep Actions logs free of raw product rows and prices. Do not upload debug HTML as an artifact on the public code repository. Debug material, if retained for a run, must stay private; otherwise let the temporary runner copy expire.
+Set these repository variables in the public code repository:
 
-The collector, CSV storage, and Docker files are implemented. The checked-in `products.yaml` is provisional and came from sitemap slugs; one serum page has been checked once, and the other 14 entries still need verification. The CLI blocks live collection with this provisional catalog. Replace the provisional marker only after page identities have been checked against real saved pages and the user approves the catalog.
+- `WHATPCT_REPO_URL`
+- `WHATPCT_CONTACT_EMAIL`
 
-## GitHub Actions schedule
+Set `DATA_REPO_TOKEN` as a secret. Use a fine-grained token restricted to the private data repository with Contents read/write access only. Never paste it into source or chat. Do not run the workflow until the owner has completed the prerequisites in Gate 0 and authorized the relevant gate.
 
-The intended scheduled collection is daily at `03:30 UTC` (`09:00 Asia/Kolkata`) with a manual `workflow_dispatch` option. Scheduled workflows may be delayed or skipped, so gaps are expected and measured as coverage. A workflow run should save collection rows to the private data repository even when health marks a run suspect; it should then fail the job to make the issue visible.
+Initialize the private data repository from [`docs/private-data-template/`](private-data-template/), which includes `snapshots/.gitkeep`, a README that marks the repository private, and ignore rules for `debug/`, `*.sqlite`, and `*.db`.
+
+Scheduled workflows may be delayed or skipped. Collection gaps reduce coverage and are reported by analysis; they must not be silently interpolated.
 
 ## Local fallback
 
-Cloud runner IPs may be blocked by a source. When that happens, run the same Docker collection command locally from the code checkout, with the private data checkout mounted at `/data`:
+From the code checkout, create `.env` from `.env.example` and check out the private data repository separately as `data-repo`. Use Windows Task Scheduler for a daily local job. Run the image build when code changes, then invoke:
 
 ```powershell
 docker build -t what-percent .
-docker run --rm --env-file .env -e WHATPCT_DATA=/data -v "${PWD}/private-data:/data" what-percent collect --limit 3
+docker run --rm --env-file .env -e WHATPCT_DATA=/data -v "${PWD}/data-repo:/data" what-percent collect
 ```
 
-Keep the private data checkout at `private-data/`, which is ignored by Git, or store it outside the code checkout. On Windows Task Scheduler, run the build only when the code changes, then schedule the `docker run` command daily at a time that respects the source's rate limits. Set `WHATPCT_CONTACT_EMAIL` in the local `.env` file before running. This example becomes usable after the Docker collector is implemented.
+The quoted bind path supports the fixed Windows project path containing a space. The mounted data checkout must remain private. On Unix, schedule the equivalent Docker command only after the go-live gates pass.
 
-## Long-term maintenance
+## Maintenance
 
-Only the current month’s CSV changes during normal collection. If the private data repository grows large, document and perform a yearly squash there. Preserve the public code repository's history independently from the private observation history.
+Only the current month’s CSV normally changes. If the private repository grows unwieldy, perform a yearly squash in that private repository while preserving a verified archive; do not squash or move price rows into the public code history.
 
+## Go-live protocol (documented only)
 
+No gate is executed by implementation work. The owner authorizes each by saying `go gate N`.
+
+0. Owner confirms both repositories, variables and `DATA_REPO_TOKEN` are ready; reviews catalog tokens and any source/terms decisions.
+1. One local `collect --limit 1` request, caching off. Report status, `Server`, `Retry-After`, content type and whether the body resembles a block page, then stop.
+2. Only after Gate 1 returns 200 and separate authorization, run one full local collection and report per-site health.
+3. After Gates 0–2 and separate authorization, manually dispatch GitHub Actions with `--limit 1`, then a full run.
+4. The owner enables the cron trigger or explicitly asks for help. Until then it remains commented out.
+
+At any gate, a 403 or 429 means stop immediately, record status, relevant headers and the first 500 response-body characters in `BREAKAGES.md`, do not retry under this gate protocol, and propose re-vetting Plum then Minimalist in `SOURCES.md`. Do not switch sources automatically.

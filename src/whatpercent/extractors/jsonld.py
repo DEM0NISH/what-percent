@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from decimal import Decimal
 from typing import Any
 
@@ -116,6 +117,25 @@ def _mrp_from_offer(offer: dict[str, Any], currency: str | None) -> Decimal | No
     return None
 
 
+def _availability(product: dict[str, Any], offer: dict[str, Any] | None) -> bool | None:
+    value = (offer or {}).get("availability") or product.get("availability")
+    if not value:
+        return None
+    normalized = str(value).lower()
+    if "instock" in normalized or "limitedavailability" in normalized:
+        return True
+    if any(marker in normalized for marker in ("outofstock", "soldout", "discontinued")):
+        return False
+    return None
+
+
+def _pack_size(title: str) -> tuple[Decimal | None, str | None]:
+    match = re.search(r"\b(\d+(?:\.\d+)?)\s*(ml|l|kg|gm|g|mg|pcs?)\b", title, re.I)
+    if match is None:
+        return None, None
+    return Decimal(match.group(1)), match.group(2).lower()
+
+
 def extract_jsonld_product(html: str) -> ExtractedProduct:
     """Return the first named Product with a priced INR offer, without guessing MRP."""
     soup = BeautifulSoup(html, "lxml")
@@ -132,11 +152,10 @@ def extract_jsonld_product(html: str) -> ExtractedProduct:
             aggregate = product.get("aggregateRating") or {}
             rating_value = aggregate.get("ratingValue") if isinstance(aggregate, dict) else None
             rating = parse_rating(str(rating_value)) if rating_value is not None else None
+            pack_size_value, pack_size_unit = _pack_size(title)
             for offer in _offers(product):
                 currency = _offer_currency(offer)
                 price = _selling_price_from_offer(offer, currency)
-                if price is None:
-                    continue
                 mrp = _mrp_from_offer(offer, currency)
                 return ExtractedProduct(
                     title=title.strip(),
@@ -145,5 +164,36 @@ def extract_jsonld_product(html: str) -> ExtractedProduct:
                     rating=rating,
                     currency=currency,
                     strategy="jsonld",
+                    availability=_availability(product, offer),
+                    pack_size_value=pack_size_value,
+                    pack_size_unit=pack_size_unit,
+                    strategy_by_field={
+                        "title": "jsonld",
+                        "price": "jsonld" if price is not None else "missing",
+                        "mrp": "jsonld" if mrp is not None else "missing",
+                        "rating": "jsonld" if rating is not None else "missing",
+                        "availability": "jsonld"
+                        if _availability(product, offer) is not None
+                        else "missing",
+                        "pack_size": "title" if pack_size_value is not None else "missing",
+                    },
                 )
+            return ExtractedProduct(
+                title=title.strip(),
+                mrp=None,
+                price=None,
+                rating=rating,
+                currency=None,
+                availability=None,
+                pack_size_value=pack_size_value,
+                pack_size_unit=pack_size_unit,
+                strategy_by_field={
+                    "title": "jsonld",
+                    "price": "missing",
+                    "mrp": "missing",
+                    "rating": "jsonld" if rating is not None else "missing",
+                    "availability": "missing",
+                    "pack_size": "title" if pack_size_value is not None else "missing",
+                },
+            )
     raise ExtractionError("no named Product with a parseable JSON-LD offer")

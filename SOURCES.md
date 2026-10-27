@@ -46,5 +46,5 @@ The page checks below used a small set of public storefront, robots.txt, terms, 
 
 ## Review outcome
 
-Mamaearth is approved only for the user-stated personal portfolio scope above. Plum and Minimalist are not selected, in that fallback order. No source-specific scraper or selector has been written yet.
+Mamaearth is approved only for the user-stated personal portfolio scope above. Plum and Minimalist are not selected, in that fallback order. The implementation contains source-specific selectors grounded in the single saved serum fixture; no other product page has been used to derive selectors.
 

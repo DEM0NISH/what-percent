@@ -47,6 +47,26 @@ def test_csv_header_idempotency_and_force(tmp_path: Path) -> None:
     assert len(rows) == 3
 
 
+def test_idempotency_applies_to_rejected_rows_too(tmp_path: Path) -> None:
+    rejected = observation(status="rejected", flags="simulated_parse_error", price="")
+    assert append_observations(tmp_path, [rejected])[:2] == (1, 0)
+    assert append_observations(tmp_path, [rejected])[:2] == (0, 1)
+
+
+def test_incomplete_or_malformed_csv_is_rejected(tmp_path: Path) -> None:
+    snapshots = tmp_path / "snapshots"
+    snapshots.mkdir()
+    path = snapshots / "2026-10.csv"
+    path.write_text("date_utc,price\n2026-10-26,374\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="missing columns"):
+        load_observations(tmp_path)
+    path.write_text(
+        ",".join(SNAPSHOT_COLUMNS) + "\n" + ",".join(["x"] * 10) + "\n", encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="extra fields"):
+        load_observations(tmp_path)
+
+
 def test_failed_atomic_replace_leaves_previous_csv_intact(tmp_path: Path, monkeypatch) -> None:
     _, _, path = append_observations(tmp_path, [observation()])
     before = path.read_bytes()

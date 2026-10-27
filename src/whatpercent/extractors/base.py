@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Protocol
 
@@ -17,6 +18,10 @@ class ExtractedProduct:
     rating: Decimal | None
     currency: str | None
     strategy: str = "jsonld"
+    availability: bool | None = None
+    pack_size_value: Decimal | None = None
+    pack_size_unit: str | None = None
+    strategy_by_field: Mapping[str, str] = field(default_factory=dict)
 
 
 class ProductExtractor(Protocol):

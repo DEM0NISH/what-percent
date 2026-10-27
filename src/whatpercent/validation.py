@@ -73,3 +73,39 @@ def validate_observation(
         if change_pct > threshold:
             flags.append("jump70")
     return ValidationResult("ok", tuple(flags))
+
+
+def validate_fallback_observation(
+    *,
+    price: Decimal | int | float | str | None,
+    mrp: Decimal | int | float | str | None,
+    currency: str | None,
+    title: str,
+    expected_tokens: Sequence[str],
+    last_good_price: Decimal | int | float | str | None,
+    fallback_max_deviation: Decimal | int | float | str = "0.50",
+) -> ValidationResult:
+    """Accept a secondary-strategy value only with baseline, MRP, and identity checks."""
+    primary = validate_observation(
+        price=price,
+        mrp=mrp,
+        currency=currency,
+        title=title,
+        expected_tokens=expected_tokens,
+    )
+    if not primary.valid:
+        return primary
+    parsed_price = _decimal(price)
+    parsed_mrp = _decimal(mrp)
+    previous = _decimal(last_good_price)
+    maximum = _decimal(fallback_max_deviation)
+    if previous is None or previous <= 0:
+        return ValidationResult("rejected", ("fallback_no_baseline",))
+    if parsed_mrp is None:
+        return ValidationResult("rejected", ("fallback_mrp_missing",))
+    if maximum is None or maximum < 0 or parsed_price is None:
+        return ValidationResult("rejected", ("fallback_deviation_invalid",))
+    deviation = abs(parsed_price - previous) / previous
+    if deviation > maximum:
+        return ValidationResult("rejected", ("fallback_deviation",))
+    return ValidationResult("fallback_ok", primary.flags)

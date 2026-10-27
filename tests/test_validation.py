@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from whatpercent.validation import validate_observation
+from whatpercent.validation import validate_fallback_observation, validate_observation
 
 
 def valid(**overrides: object):
@@ -71,3 +71,52 @@ def test_unavailable_mrp_is_allowed() -> None:
 def test_invalid_identity_token_configuration_is_rejected() -> None:
     result = valid(expected_tokens=["c"])
     assert result.flags == ("invalid_identity_tokens",)
+
+
+def test_validated_fallback_requires_and_accepts_close_last_good_price() -> None:
+    result = validate_fallback_observation(
+        price=400,
+        mrp=499,
+        currency="INR",
+        title="Vitamin C Daily Glow Face Serum - 30 ml",
+        expected_tokens=["vitamin c", "daily glow", "30ml"],
+        last_good_price=374,
+    )
+    assert result.status == "fallback_ok"
+
+
+def test_fallback_without_baseline_is_rejected() -> None:
+    result = validate_fallback_observation(
+        price=400,
+        mrp=499,
+        currency="INR",
+        title="Vitamin C Daily Glow Face Serum - 30 ml",
+        expected_tokens=["vitamin c", "daily glow", "30ml"],
+        last_good_price=None,
+    )
+    assert result.flags == ("fallback_no_baseline",)
+
+
+def test_simulated_plausible_but_wrong_fallback_price_is_rejected() -> None:
+    result = validate_fallback_observation(
+        price=600,
+        mrp=999,
+        currency="INR",
+        title="Vitamin C Daily Glow Face Serum - 30 ml",
+        expected_tokens=["vitamin c", "daily glow", "30ml"],
+        last_good_price=374,
+    )
+    assert result.status == "rejected"
+    assert result.flags == ("fallback_deviation",)
+
+
+def test_fallback_above_mrp_is_rejected() -> None:
+    result = validate_fallback_observation(
+        price=500,
+        mrp=499,
+        currency="INR",
+        title="Vitamin C Daily Glow Face Serum - 30 ml",
+        expected_tokens=["vitamin c", "daily glow", "30ml"],
+        last_good_price=374,
+    )
+    assert result.flags == ("price_gt_mrp",)

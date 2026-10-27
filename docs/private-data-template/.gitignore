@@ -1,0 +1,5 @@
+debug/
+*.sqlite
+*.db
+__pycache__/
+*.py[cod]

@@ -6,6 +6,7 @@ from whatpercent.extractors.jsonld import (
     JsonLdProductExtractor,
     extract_jsonld_product,
 )
+from whatpercent.extractors.mamaearth import extract_mamaearth_product
 
 __all__ = [
     "ExtractedProduct",
@@ -13,4 +14,5 @@ __all__ = [
     "JsonLdProductExtractor",
     "ProductExtractor",
     "extract_jsonld_product",
+    "extract_mamaearth_product",
 ]

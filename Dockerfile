@@ -11,6 +11,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY src /app/src
+COPY products.yaml /app/products.yaml
 RUN adduser --disabled-password --gecos "" --uid 10001 app \
     && mkdir -p /data \
     && chown app:app /data
