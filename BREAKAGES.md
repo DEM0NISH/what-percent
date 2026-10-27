@@ -25,3 +25,11 @@ Simulated failures belong in tests and must be labelled simulated. Do not record
 - **Root cause:** Unknown. Headers: `Retry-After: 60`, `Server: cloudflare`, `Content-Type: text/plain`, `Content-Length: 18`, `CF-Ray: a50f844f2f4d4463-BOM`, `X-Request-ID: 59bc80e2-ba85-4c28-bf46-75958f04ce04-1793081208`. The fetcher returned no body for non-2xx responses, so body text is unavailable; it was not re-requested.
 - **Fix:** No retry. Stop Mamaearth live collection and propose re-vetting Plum, then Minimalist. No fallback source request has been made.
 - **Lesson:** Respect 429 responses and stop at the source approval checkpoint.
+
+## Gate 1 post-cooldown retry — HTTP 429
+
+- **Symptom:** One request after the first `Retry-After: 60` interval again returned HTTP 429 for the Aloe Vera Face Wash URL.
+- **How detected:** Project fetcher, 2026-10-27 06:11:43 UTC.
+- **Root cause:** Unknown. Headers: `Retry-After: 60`, `Server: cloudflare`, `Content-Type: text/plain`, `Content-Length: 18`, `CF-Ray: a50f8b83afac23aa-MAA`, `X-Request-ID: ccc2c064-e0e1-49fd-98a9-f3a7ccadae27-1793081503`. The fetcher did not expose the non-2xx response body; it was not re-requested.
+- **Fix:** Stop Mamaearth requests. Re-vetting Plum then Minimalist remains a proposal only; no fallback requests have been made.
+- **Lesson:** A repeated 429 is a clear stop signal; do not continue retrying.

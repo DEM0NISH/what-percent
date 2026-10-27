@@ -46,7 +46,7 @@ The page checks below used a small set of public storefront, robots.txt, terms, 
 
 ## Gate 1 result — source blocked
 
-On 2026-10-27, the single authorized uncached fetcher request to the Aloe Vera Face Wash product URL returned HTTP 429. The fetcher made no retry. The response reported `Retry-After: 60`, `Server: cloudflare`, and `Content-Type: text/plain`. Per the approved fallback order, propose re-vetting Plum first, then Minimalist. No fallback source has been approved or queried, and Mamaearth collection is stopped pending that review.
+On 2026-10-27, the authorized uncached Gate 1 request and one post-cooldown retry to the Aloe Vera Face Wash product URL both returned HTTP 429. Both responses reported `Retry-After: 60`, `Server: cloudflare`, and `Content-Type: text/plain`. No further requests will be made. Per the approved fallback order, propose re-vetting Plum first, then Minimalist. No fallback source has been approved or queried.
 
 ## Review outcome
 
