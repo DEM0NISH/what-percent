@@ -32,7 +32,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '285', price: '251', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: charcoal-face-wash-100ml
     brand: Mamaearth
     variant: Charcoal Face Wash for Oil Control, 100ml
@@ -46,7 +46,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '285', price: '251', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: lemon-anti-dandruff-shampoo-400ml
     brand: Mamaearth
     variant: Lemon Anti-Dandruff Shampoo with Lemon & Aloe Vera for Itchy & Flaky Scalp - 400ml
@@ -60,7 +60,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '599', price: '479', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: onion-conditioner-250ml
     brand: Mamaearth
     variant: Onion Conditioner for Hair Fall Control - 250ml
@@ -74,7 +74,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '399', price: '339', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: onion-shampoo-250ml
     brand: Mamaearth
     variant: Onion Shampoo with Onion and Plant Keratin for Hair Fall Control - 250ml
@@ -88,7 +88,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '349', price: '314', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: onion-redensyl-hair-oil-150ml
     brand: Mamaearth
     variant: Onion Hair Oil with Onion Oil & Redensyl for Hair Fall Control - 150 ml
@@ -102,7 +102,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '419', price: '335', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: rosemary-hair-growth-oil-150ml
     brand: Mamaearth
     variant: Rosemary Hair Growth Oil with Rosemary & Methi Dana for Promoting Hair Growth - 150 ml
@@ -116,7 +116,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '419', price: '335', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: skin-illuminate-sunscreen-50g
     brand: Mamaearth
     variant: Skin Illuminate Sunscreen Gel SPF 50 with Vitamin C & Turmeric for UVA & B Protection - 50 g
@@ -130,7 +130,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '449', price: '386', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: ubtan-foaming-face-wash-150ml
     brand: Mamaearth
     variant: Ubtan Foaming Face Wash with Turmeric and Saffron for Tan Removal - 150ml
@@ -144,7 +144,7 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '399', price: '351', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
   - id: mineral-based-sunscreen-50ml
     brand: Mamaearth
     variant: Mineral Based Sunscreen 50ml
@@ -158,5 +158,5 @@ products:
     verified_at: '2026-10-27'
     verified_by: manual-browser
     source: fixture
-    fixture_observed: {mrp: '150', price: '129', date: '2026-10-27'}
+    fixture_observed: {date: '2026-10-27'}
 

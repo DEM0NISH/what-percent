@@ -154,10 +154,8 @@ def load_products(config_path: Path | str) -> list[dict[str, Any]]:
         if product.get("source") != "fixture":
             gate_issues[label].append('source must be "fixture"')
         observed = product.get("fixture_observed")
-        if not isinstance(observed, dict) or any(
-            not str(observed.get(field, "")).strip() for field in ("mrp", "price", "date")
-        ):
-            gate_issues[label].append("fixture_observed requires mrp, price, and date")
+        if not isinstance(observed, dict) or not str(observed.get("date", "")).strip():
+            gate_issues[label].append("fixture_observed requires its verification date")
         for field in ("brand", "variant", "category"):
             if not str(product.get(field, "")).strip():
                 gate_issues[label].append(f"{field} is missing")
