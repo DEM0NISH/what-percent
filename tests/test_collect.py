@@ -99,9 +99,10 @@ def test_product_config_rejects_unapproved_site(tmp_path) -> None:
         raise AssertionError("unapproved host was accepted")
 
 
-def test_v3_catalog_without_raw_fixtures_is_empty_and_live_collect_is_blocked() -> None:
-    with pytest.raises(ValueError, match="Catalog is empty"):
-        load_products("products.yaml")
+def test_fixture_verified_catalog_loads_without_public_price_rows() -> None:
+    products = load_products("products.yaml")
+    assert len(products) == 10
+    assert all(product["fixture_observed"] == {"date": "2026-10-27"} for product in products)
 
 
 def test_catalog_gate_lists_all_unverified_missing_token_and_duplicate_ids(tmp_path) -> None:
