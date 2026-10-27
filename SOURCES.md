@@ -44,6 +44,10 @@ The page checks below used a small set of public storefront, robots.txt, terms, 
 - **User approval note:** "Approved by me. Terms limit use to personal, non-commercial use; I accept this risk for a personal portfolio project. Low volume only: about 10-15 public product pages, once a day, polite rate limits, robots.txt respected, no logins, no personal data. Raw data stays private; only code and aggregated results are published. Will stop if the site blocks me or asks me to."
 - **Decision:** **approved**
 
+## Gate 1 result — source blocked
+
+On 2026-10-27, the single authorized uncached fetcher request to the Aloe Vera Face Wash product URL returned HTTP 429. The fetcher made no retry. The response reported `Retry-After: 60`, `Server: cloudflare`, and `Content-Type: text/plain`. Per the approved fallback order, propose re-vetting Plum first, then Minimalist. No fallback source has been approved or queried, and Mamaearth collection is stopped pending that review.
+
 ## Review outcome
 
 Mamaearth is approved only for the user-stated personal portfolio scope above. Plum and Minimalist are not selected, in that fallback order. The implementation contains source-specific selectors grounded in the single saved serum fixture; no other product page has been used to derive selectors.
