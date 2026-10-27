@@ -1,6 +1,4 @@
-# Catalog paused: the v3 browser-saved raw fixtures are missing locally.
-# Do not restore sitemap-derived entries or enable collection until fixtures are supplied.
-catalog_status: awaiting_raw_fixtures
+catalog_status: fixture_verified_pending_live_gate
 settings:
   sale_start: null
   sale_end: null
@@ -20,4 +18,145 @@ settings:
   drift_min_similarity: 0.80
   sale_day_bump_pp: 10
   sale_day_share_min: 0.40
-products: []
+products:
+  - id: aloe-vera-face-wash-100ml
+    brand: Mamaearth
+    variant: Aloe Vera Face Wash with Aloe Vera & Ashwagandha for a Youthful Glow - 100 ml
+    category: face_wash
+    pack_size_value: 100
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/aloe-vera-face-wash-with-aloe-vera-ashwagandha-for-a-youthful-glow-100-ml
+    expected_tokens: [aloe vera, ashwagandha, 100ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '285', price: '251', date: '2026-10-27'}
+  - id: charcoal-face-wash-100ml
+    brand: Mamaearth
+    variant: Charcoal Face Wash for Oil Control, 100ml
+    category: face_wash
+    pack_size_value: 100
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/best-charcoal-face-wash
+    expected_tokens: [charcoal face wash, oil control, 100ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '285', price: '251', date: '2026-10-27'}
+  - id: lemon-anti-dandruff-shampoo-400ml
+    brand: Mamaearth
+    variant: Lemon Anti-Dandruff Shampoo with Lemon & Aloe Vera for Itchy & Flaky Scalp - 400ml
+    category: shampoo
+    pack_size_value: 400
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/lemon-anti-dandruff-shampoo-with-lemon-ginger-400-ml
+    expected_tokens: [lemon anti-dandruff, flaky scalp, 400ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '599', price: '479', date: '2026-10-27'}
+  - id: onion-conditioner-250ml
+    brand: Mamaearth
+    variant: Onion Conditioner for Hair Fall Control - 250ml
+    category: conditioner
+    pack_size_value: 250
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/mamaearth-onion-conditioner-for-hair-growth-hair-fall-control-with-onion-coconut-250ml
+    expected_tokens: [onion conditioner, hair fall control, 250ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '399', price: '339', date: '2026-10-27'}
+  - id: onion-shampoo-250ml
+    brand: Mamaearth
+    variant: Onion Shampoo with Onion and Plant Keratin for Hair Fall Control - 250ml
+    category: shampoo
+    pack_size_value: 250
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/mamaearth-onion-shampoo-for-hair-growth-hair-fall-control-with-onion-oil-plant-keratin-250-ml
+    expected_tokens: [onion shampoo, hair fall control, 250ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '349', price: '314', date: '2026-10-27'}
+  - id: onion-redensyl-hair-oil-150ml
+    brand: Mamaearth
+    variant: Onion Hair Oil with Onion Oil & Redensyl for Hair Fall Control - 150 ml
+    category: hair_oil
+    pack_size_value: 150
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/onion-hair-oil-for-hair-regrowth-hair-fall-control-with-redensyl-150ml
+    expected_tokens: [onion hair oil, redensyl, 150ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '419', price: '335', date: '2026-10-27'}
+  - id: rosemary-hair-growth-oil-150ml
+    brand: Mamaearth
+    variant: Rosemary Hair Growth Oil with Rosemary & Methi Dana for Promoting Hair Growth - 150 ml
+    category: hair_oil
+    pack_size_value: 150
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/rosemary-hair-growth-oil-150ml
+    expected_tokens: [rosemary hair growth oil, methi dana, 150ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '419', price: '335', date: '2026-10-27'}
+  - id: skin-illuminate-sunscreen-50g
+    brand: Mamaearth
+    variant: Skin Illuminate Sunscreen Gel SPF 50 with Vitamin C & Turmeric for UVA & B Protection - 50 g
+    category: sunscreen
+    pack_size_value: 50
+    pack_size_unit: g
+    urls:
+      mamaearth: https://mamaearth.in/products/skin-illuminate-sunscreen-gel-spf-50-with-vitamin-c-turmeric-for-uva-b-protection-50-g
+    expected_tokens: [skin illuminate, spf 50, 50g]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '449', price: '386', date: '2026-10-27'}
+  - id: ubtan-foaming-face-wash-150ml
+    brand: Mamaearth
+    variant: Ubtan Foaming Face Wash with Turmeric and Saffron for Tan Removal - 150ml
+    category: face_wash
+    pack_size_value: 150
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/ubtan-foaming-face-wash-with-turmeric-saffron-for-tan-removal-150ml
+    expected_tokens: [ubtan foaming, turmeric and saffron, 150ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '399', price: '351', date: '2026-10-27'}
+  - id: mineral-based-sunscreen-50ml
+    brand: Mamaearth
+    variant: Mineral Based Sunscreen 50ml
+    category: sunscreen
+    pack_size_value: 50
+    pack_size_unit: ml
+    urls:
+      mamaearth: https://mamaearth.in/products/mineral-based-sunscreen-50ml
+    expected_tokens: [mineral based, sunscreen, 50ml]
+    verified: true
+    verified_at: '2026-10-27'
+    verified_by: manual-browser
+    source: fixture
+    fixture_observed: {mrp: '150', price: '129', date: '2026-10-27'}
+

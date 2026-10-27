@@ -2,11 +2,11 @@
 
 [![CI](https://github.com/DEM0NISH/what-percent/actions/workflows/ci.yml/badge.svg)](https://github.com/DEM0NISH/what-percent/actions/workflows/ci.yml)
 
-A self-monitoring scraper with validated fallbacks for product price history. The project checks data quality and pipeline reliability, then describes gap-flagged discount patterns. It does not establish intent.
+A self-monitoring price tracker for one approved brand site. It validates product identity, pack size, price and MRP, then describes gap-flagged discount patterns. A gap flag does not establish intent.
 
-## Findings
+## Current result
 
-Real-data findings are pending. The 15 browser-saved raw product fixtures are not present in this checkout, the catalog is closed pending those fixtures, and no real collection dataset exists. Synthetic tests are not reported as real findings.
+A one-time offline snapshot from user-supplied Mamaearth HTML contains 10 in-stock product pages with product-specific current price and MRP. The advertised discount averages 14.9%, with a 14.0% median and a 10.0–20.0% range. The offline collector parsed all 10 pages with healthy field fill. This does not establish price history or whether any sale is genuine. See [reports/initial_snapshot.md](reports/initial_snapshot.md).
 
 ## What it does
 
@@ -18,28 +18,28 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): fetch → extract → validate
 
 ## Quick start
 
-Create `.env` from `.env.example` and set the honest User-Agent values. Collection is blocked while `products.yaml` has no fixture-verified catalog. To check the packaged CLI without collecting:
+Create `.env` from `.env.example` and set the honest User-Agent values. The 10-product catalog is fixture-verified. Live collection remains subject to the documented go-live gates. For local development:
 
 ```powershell
-python -m whatpercent --help
-docker build -t what-percent .
-docker run --rm what-percent --help
+python -m pip install -e . -r requirements-dev.txt
+ruff check .
+pytest -q -m "not live"
 ```
 
-Use a venv for local development. Install the project with `python -m pip install -e . -r requirements-dev.txt`, then run `ruff check .` and `pytest -q -m "not live"`. The `@pytest.mark.live` smoke test is excluded from CI and must not run without explicit authorization.
+The `@pytest.mark.live` smoke test is excluded from CI and must not run without explicit authorization.
 
 ## Storage and scheduling
 
-Monthly CSV observations, run health, spot-checks and fingerprints belong in a separate private data repository. SQLite is derived and never committed. Raw HTML, personal data and unnecessary page content are not published. The public repository contains code, tests, documentation and aggregated reports only. See [docs/SCHEDULING.md](docs/SCHEDULING.md); the daily schedule remains commented out until the owner enables it.
+Monthly CSV observations, run health, spot-checks and fingerprints belong in a separate private data repository. SQLite is derived and never committed. Raw HTML, personal data and unnecessary page content are not published. The public repository contains code, tests, documentation and aggregated reports only. See [docs/SCHEDULING.md](docs/SCHEDULING.md); the daily schedule remains disabled until the owner enables it.
 
-## What broke
+## Fixture recovery
 
-The expected raw-fixture directory is missing from this checkout. Its cause is unknown; no live scraping block is implied. See [BREAKAGES.md](BREAKAGES.md) for the observed recovery issue.
+The browser-saved pages have been recovered into the gitignored `tests/fixtures/raw/` directory. Ten entries are active in the catalog; pages that were out of stock or lacked a product-specific MRP were excluded. See [docs/PENDING_PRODUCTS.md](docs/PENDING_PRODUCTS.md).
 
 ## Responsible scraping
 
-Source approval and the owner's risk note are recorded in [SOURCES.md](SOURCES.md). The fetcher uses an identifying User-Agent, observes robots rules and polite delays, and does not bypass access controls. Go-live gates are documented but have not been run.
+Source approval and the owner's risk note are recorded in [SOURCES.md](SOURCES.md). The fetcher uses an identifying User-Agent, observes robots rules and polite delays, and does not bypass access controls. The live go-live gates have not been run.
 
 ## Limitations and future work
 
-The intended sample is one brand site and 15 products with daily snapshots, so it is not representative of the market. Real findings, sale-window dates, and spot-check accuracy remain pending genuine data and owner decisions. Future work depends on recovering the saved fixtures, confirming the catalog tokens, and passing the go-live gates.
+The current sample is 10 products from one brand site and one saved snapshot. It is not representative of the market and cannot support historical sale claims. Real collection, sale-window dates, and spot-check accuracy remain pending. The private data repository and owner-authorized live gates are required before scheduled collection.

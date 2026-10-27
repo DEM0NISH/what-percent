@@ -22,3 +22,8 @@ data/*
 tests/fixtures/raw/
 data/debug/
 debug/
+
+# Owner-supplied raw browser pages stay local
+/pages/
+/pages.zip
+
